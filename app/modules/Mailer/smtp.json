@@ -1,0 +1,12 @@
+{
+  "name": "smtp",
+  "module": "mail",
+  "action": "setup",
+  "options": {
+    "host": "mail.mhageman.nl",
+    "port": 587,
+    "username": "michel@mhageman.nl",
+    "password": "Stat5241!!21!"
+  },
+  "output": true
+}

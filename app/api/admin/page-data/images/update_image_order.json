@@ -1,0 +1,169 @@
+{
+  "meta": {
+    "options": {
+      "linkedFile": "/views/lgadmin/page-content.ejs",
+      "linkedForm": "form_update_order"
+    },
+    "$_POST": [
+      {
+        "type": "array",
+        "name": "formRepeat1",
+        "sub": [
+          {
+            "type": "text",
+            "fieldName": "formRepeat1[{{$index}}][order]",
+            "name": "order"
+          },
+          {
+            "type": "text",
+            "fieldName": "formRepeat1[{{$index}}][pageimages_id]",
+            "name": "pageimages_id"
+          }
+        ]
+      },
+      {
+        "type": "array",
+        "name": "record",
+        "sub": [
+          {
+            "type": "text",
+            "name": "imagelink"
+          },
+          {
+            "type": "number",
+            "name": "pagecontent_id"
+          },
+          {
+            "type": "number",
+            "name": "imagecreator_id"
+          },
+          {
+            "type": "number",
+            "name": "order"
+          },
+          {
+            "type": "text",
+            "name": "featured"
+          },
+          {
+            "type": "number",
+            "name": "pageimages_id"
+          }
+        ]
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "record_repeat",
+        "module": "core",
+        "action": "repeat",
+        "options": {
+          "repeat": "{{$_POST.formRepeat1}}",
+          "outputFields": [],
+          "exec": {
+            "steps": {
+              "name": "record_update",
+              "module": "dbupdater",
+              "action": "update",
+              "options": {
+                "connection": "db",
+                "sql": {
+                  "type": "update",
+                  "values": [
+                    {
+                      "table": "pagecontent_pageimages",
+                      "column": "order",
+                      "type": "number",
+                      "value": "{{order}}"
+                    }
+                  ],
+                  "table": "pagecontent_pageimages",
+                  "wheres": {
+                    "condition": "AND",
+                    "rules": [
+                      {
+                        "id": "pageimages_id",
+                        "type": "double",
+                        "operator": "equal",
+                        "value": "{{pageimages_id}}",
+                        "data": {
+                          "column": "pageimages_id"
+                        },
+                        "operation": "="
+                      }
+                    ]
+                  },
+                  "returning": "pageimages_id",
+                  "query": "update `pagecontent_pageimages` set `order` = ? where `pageimages_id` = ? returning `pageimages_id`",
+                  "params": [
+                    {
+                      "name": ":P1",
+                      "type": "expression",
+                      "value": "{{order}}",
+                      "test": ""
+                    },
+                    {
+                      "operator": "equal",
+                      "type": "expression",
+                      "name": ":P2",
+                      "value": "{{pageimages_id}}",
+                      "test": ""
+                    }
+                  ]
+                }
+              },
+              "meta": [
+                {
+                  "name": "affected",
+                  "type": "number"
+                }
+              ]
+            }
+          }
+        },
+        "meta": [
+          {
+            "name": "$index",
+            "type": "number"
+          },
+          {
+            "name": "$number",
+            "type": "number"
+          },
+          {
+            "name": "$name",
+            "type": "text"
+          },
+          {
+            "name": "$value",
+            "type": "object"
+          },
+          {
+            "name": "order",
+            "type": "text"
+          },
+          {
+            "name": "pageimages_id",
+            "type": "text"
+          }
+        ],
+        "outputType": "array"
+      }
+    ]
+  }
+}

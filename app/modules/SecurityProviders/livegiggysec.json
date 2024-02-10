@@ -1,0 +1,113 @@
+{
+  "name": "livegiggysec",
+  "module": "auth",
+  "action": "provider",
+  "options": {
+    "secret": "CFZVGIz02qFNwUt",
+    "provider": "Database",
+    "connection": "db",
+    "passwordVerify": true,
+    "users": {
+      "table": "user",
+      "identity": "user_id",
+      "username": "username",
+      "password": "password"
+    },
+    "permissions": {
+      "Administrator": {
+        "table": "user_role",
+        "identity": "user_id",
+        "conditions": [
+          {
+            "column": "role",
+            "operator": "=",
+            "value": "A"
+          }
+        ]
+      },
+      "Editor": {
+        "table": "user_role",
+        "identity": "user_id",
+        "conditions": [
+          {
+            "column": "role",
+            "operator": "=",
+            "value": "E"
+          }
+        ]
+      },
+      "SEO": {
+        "table": "user_role",
+        "identity": "user_id",
+        "conditions": [
+          {
+            "column": "role",
+            "operator": "=",
+            "value": "O"
+          }
+        ]
+      },
+      "Subscriber": {
+        "table": "user_role",
+        "identity": "user_id",
+        "conditions": [
+          {
+            "column": "role",
+            "operator": "=",
+            "value": "S"
+          }
+        ]
+      },
+      "Member": {
+        "table": "user_role",
+        "identity": "user_id",
+        "conditions": [
+          {
+            "column": "role",
+            "operator": "=",
+            "value": "M"
+          }
+        ]
+      },
+      "Author": {
+        "table": "user_role",
+        "identity": "user_id",
+        "conditions": [
+          {
+            "column": "role",
+            "operator": "=",
+            "value": "T"
+          }
+        ]
+      },
+      "Venue": {
+        "table": "user_role",
+        "identity": "user_id",
+        "conditions": [
+          {
+            "column": "role",
+            "operator": "=",
+            "value": "V"
+          }
+        ]
+      },
+      "Commercial": {
+        "table": "user_role",
+        "identity": "user_id",
+        "conditions": [
+          {
+            "column": "role",
+            "operator": "=",
+            "value": "C"
+          }
+        ]
+      }
+    }
+  },
+  "meta": [
+    {
+      "name": "identity",
+      "type": "text"
+    }
+  ]
+}

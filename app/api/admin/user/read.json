@@ -1,0 +1,130 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "user_id"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "query",
+        "module": "dbconnector",
+        "action": "single",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "select",
+            "columns": [
+              {
+                "table": "user",
+                "column": "user_id"
+              },
+              {
+                "table": "user",
+                "column": "first_name"
+              },
+              {
+                "table": "user",
+                "column": "last_name"
+              },
+              {
+                "table": "user",
+                "column": "email"
+              },
+              {
+                "table": "user",
+                "column": "password"
+              },
+              {
+                "table": "user",
+                "column": "signup_date"
+              },
+              {
+                "table": "user",
+                "column": "confirmation_code"
+              },
+              {
+                "table": "user",
+                "column": "validated_date"
+              }
+            ],
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_GET.user_id}}",
+                "test": ""
+              }
+            ],
+            "table": {
+              "name": "user"
+            },
+            "primary": "user_id",
+            "joins": [],
+            "query": "select `user_id`, `first_name`, `last_name`, `email`, `password`, `signup_date`, `confirmation_code`, `validated_date` from `user` where `user`.`user_id` = ?",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "user.user_id",
+                  "field": "user.user_id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{$_GET.user_id}}",
+                  "data": {
+                    "table": "user",
+                    "column": "user_id",
+                    "type": "number",
+                    "columnObj": {
+                      "type": "increments",
+                      "primary": true,
+                      "unique": false,
+                      "nullable": false,
+                      "name": "user_id"
+                    }
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            }
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "type": "number",
+            "name": "user_id"
+          },
+          {
+            "type": "text",
+            "name": "email"
+          },
+          {
+            "type": "text",
+            "name": "password"
+          }
+        ],
+        "outputType": "object"
+      }
+    ]
+  }
+}

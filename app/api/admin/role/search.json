@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      },
+      {
+        "type": "text",
+        "name": "filter"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "query",
+        "module": "dbconnector",
+        "action": "select",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "select",
+            "columns": [
+              {
+                "table": "roles",
+                "column": "*"
+              }
+            ],
+            "params": [],
+            "table": {
+              "name": "roles"
+            },
+            "primary": "role_id",
+            "joins": [],
+            "query": "select * from `roles`"
+          }
+        },
+        "output": true,
+        "meta": [],
+        "outputType": "array"
+      }
+    ]
+  }
+}

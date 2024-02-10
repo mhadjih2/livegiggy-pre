@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "get_all_roles_available_query",
+        "module": "dbconnector",
+        "action": "select",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "select",
+            "columns": [
+              {
+                "table": "authorized_roles",
+                "column": "*"
+              },
+              {
+                "table": "authorized_roles",
+                "column": "rolename"
+              }
+            ],
+            "params": [],
+            "table": {
+              "name": "authorized_roles"
+            },
+            "primary": "authorized_roles_id",
+            "joins": [],
+            "orders": [
+              {
+                "table": "authorized_roles",
+                "column": "rolename",
+                "direction": "ASC",
+                "recid": 1
+              }
+            ],
+            "query": "select *, `rolename` from `authorized_roles` where `authorized_roles`.`role` <> ? and `authorized_roles`.`role` <> ? order by `rolename` ASC",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "authorized_roles.role",
+                  "field": "authorized_roles.role",
+                  "type": "string",
+                  "operator": "not_equal",
+                  "value": "A",
+                  "data": {
+                    "table": "authorized_roles",
+                    "column": "role",
+                    "type": "text",
+                    "columnObj": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "primary": false,
+                      "unique": false,
+                      "nullable": true,
+                      "name": "role"
+                    }
+                  },
+                  "operation": "<>"
+                },
+                {
+                  "id": "authorized_roles.role",
+                  "field": "authorized_roles.role",
+                  "type": "string",
+                  "operator": "not_equal",
+                  "value": "C",
+                  "data": {
+                    "table": "authorized_roles",
+                    "column": "role",
+                    "type": "text",
+                    "columnObj": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "primary": false,
+                      "unique": false,
+                      "nullable": true,
+                      "name": "role"
+                    }
+                  },
+                  "operation": "<>"
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            }
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "type": "number",
+            "name": "authrole_id"
+          },
+          {
+            "type": "text",
+            "name": "role"
+          },
+          {
+            "type": "text",
+            "name": "roledescription"
+          }
+        ],
+        "outputType": "array"
+      }
+    ]
+  }
+}

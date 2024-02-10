@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "user_id"
+      }
+    ],
+    "$_POST": [
+      {
+        "type": "text",
+        "name": "user_id"
+      },
+      {
+        "type": "text",
+        "name": "role"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "insert",
+        "module": "dbupdater",
+        "action": "insert",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "insert",
+            "values": [
+              {
+                "table": "roles",
+                "column": "user_id",
+                "type": "text",
+                "value": "{{$_POST.user_id}}"
+              },
+              {
+                "table": "roles",
+                "column": "role",
+                "type": "text",
+                "value": "{{$_POST.role}}"
+              }
+            ],
+            "table": "roles",
+            "returning": "role_id",
+            "query": "insert into `roles` (`role`, `user_id`) values (?, ?)",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{$_POST.user_id}}",
+                "test": ""
+              },
+              {
+                "name": ":P2",
+                "type": "expression",
+                "value": "{{$_POST.role}}",
+                "test": ""
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "identity",
+            "type": "text"
+          },
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+
+<head>
+  <script src="/dmxAppConnect/dmxAppConnect.js"></script>
+  <script src="/dmxAppConnect/dmxRouting/dmxRouting.js" defer></script>
+
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <title>Untitled Document</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="/bootstrap/5/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc" crossorigin="anonymous" />
+  <link rel="stylesheet" href="/dmxAppConnect/dmxValidator/dmxValidator.css" />
+  <script src="/dmxAppConnect/dmxValidator/dmxValidator.js" defer></script>
+  <link rel="stylesheet" href="/dmxAppConnect/dmxNotifications/dmxNotifications.css" />
+  <script src="/dmxAppConnect/dmxNotifications/dmxNotifications.js" defer></script>
+  <script src="/dmxAppConnect/dmxBrowser/dmxBrowser.js" defer></script>
+  <script src="/dmxAppConnect/dmxTyped/dmxTyped.js" defer></script>
+  <script src="/dmxAppConnect/dmxTyped/typed.min.js" defer></script>
+  <script src="/dmxAppConnect/dmxBootstrap5Modal/dmxBootstrap5Modal.js" defer></script>
+  <script src="/dmxAppConnect/dmxBootstrap5Toasts/dmxBootstrap5Toasts.js" defer></script>
+  <script src="/dmxAppConnect/dmxBootstrap5Navigation/dmxBootstrap5Navigation.js" defer></script>
+  <div is="dmx-browser" id="browser1"></div>
+  <dmx-serverconnect id="conn_layout_whoami" url="/api/registration/whoami"></dmx-serverconnect>
+  <dmx-notifications id="notifies1"></dmx-notifications>
+  <header>
+    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand ms-2" href="/" internal="true">LiveGiggy</a>
+        <span class="navbar-text text-info mt-lg-1" dmx-hide="(conn_layout_whoami.data.identity &lt; 1)">Hi {{conn_layout_whoami.data.query_who_am_i.first_name}}!
+        </span><button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar1_collapse" aria-controls="navbar1_collapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbar1_collapse">
+          <div class="navbar-nav justify-content-lg-between ms-lg-auto me-lg-2">
+            <a class="nav-item nav-link active" href="/" internal="true">Home</a>
+            <a class="nav-item nav-link text-info" href="#">Your Videos</a>
+
+            <a class="nav-item nav-link" href="#">Channels</a>
+            <a class="nav-item nav-link" href="#">News</a>
+            <a class="nav-item nav-link" href="#">Our Plans</a>
+            <a class="nav-item nav-link" href="#">Shop</a>
+            <a class="nav-item nav-link text-danger" href="#">Go Live!</a>
+
+            <div class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="navbar1_dropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Account</a>
+              <div class="dropdown-menu" aria-labelledby="navbar1_dropdown">
+                <a class="dropdown-item" href="/Registration" internal="true" dmx-show="(conn_layout_whoami.data.identity &lt; 1)">Register</a>
+                <a class="dropdown-item" href="/login-page" dmx-show="(conn_layout_whoami.data.identity &lt; 1)">Login</a>
+                <a class="dropdown-item" href="#" dmx-on:click="run({'bootbox.confirm':{message:'Do you want to log out?',title:'LogoutConfirm',buttons:{confirm:{label:'Logout',className:'btn-danger'},cancel:{label:'Cancel',className:'btn-info'}},backdrop:true,then:{steps:[{serverConnect:{url:'/api/registration/logout',site:'testing2',name:'sc',outputType:'object'}},{'toast.show':{message:'You are logged out...!',delay:2000}},{wait:{delay:2000}},{run:{action:`browser1.goto(\'/\')`,outputType:'text'}}]},else:{steps:[{'toast.show':{message:'Cancelling!',delay:2000}},{wait:{delay:2000}}]},name:'Logout'}})" dmx-show="(conn_layout_whoami.data.identity &gt; 0)">Logout</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" dmx-hide="(conn_layout_whoami.data.identity &lt; 1)">My Account</a>
+                <a class="dropdown-item" href="#" dmx-hide="(conn_layout_whoami.data.identity &lt; 1)">Change Password</a>
+              </div>
+            </div>
+            <a class="nav-item nav-link" href="#" internal="true">Contact</a>
+          </div>
+        </div>
+
+      </div>
+    </nav>
+  </header>
+  <div is="dmx-view" id="content">
+    <%- await include(content, locals); %>
+  </div>

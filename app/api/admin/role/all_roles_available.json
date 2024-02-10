@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "get_all_roles_available_query",
+        "module": "dbconnector",
+        "action": "select",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "select",
+            "columns": [
+              {
+                "table": "authorized_roles",
+                "column": "*"
+              },
+              {
+                "table": "authorized_roles",
+                "column": "rolename"
+              }
+            ],
+            "params": [],
+            "table": {
+              "name": "authorized_roles"
+            },
+            "primary": "authorized_roles_id",
+            "joins": [],
+            "orders": [
+              {
+                "table": "authorized_roles",
+                "column": "rolename",
+                "direction": "ASC",
+                "recid": 1
+              }
+            ],
+            "query": "select *, `rolename` from `authorized_roles` order by `rolename` ASC"
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "type": "number",
+            "name": "authrole_id"
+          },
+          {
+            "type": "text",
+            "name": "role"
+          },
+          {
+            "type": "text",
+            "name": "roledescription"
+          }
+        ],
+        "outputType": "array"
+      }
+    ]
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "user_id"
+      }
+    ],
+    "$_POST": [
+      {
+        "type": "text",
+        "name": "user_id"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "query",
+        "module": "dbconnector",
+        "action": "single",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "select",
+            "columns": [
+              {
+                "table": "roles",
+                "column": "*"
+              }
+            ],
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_GET.user_id}}",
+                "test": ""
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P2",
+                "value": "{{$_POST.user_id}}",
+                "test": ""
+              }
+            ],
+            "table": {
+              "name": "roles"
+            },
+            "primary": "role_id",
+            "joins": [],
+            "query": "select * from `roles` where `roles`.`user_id` = ? or `roles`.`user_id` = ?",
+            "wheres": {
+              "condition": "OR",
+              "rules": [
+                {
+                  "id": "roles.user_id",
+                  "field": "roles.user_id",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{$_GET.user_id}}",
+                  "data": {
+                    "table": "roles",
+                    "column": "user_id",
+                    "type": "text",
+                    "columnObj": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "primary": false,
+                      "unique": false,
+                      "nullable": true,
+                      "name": "user_id"
+                    }
+                  },
+                  "operation": "=",
+                  "table": "roles"
+                },
+                {
+                  "id": "roles.user_id",
+                  "field": "roles.user_id",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{$_POST.user_id}}",
+                  "data": {
+                    "table": "roles",
+                    "column": "user_id",
+                    "type": "text",
+                    "columnObj": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "primary": false,
+                      "unique": false,
+                      "nullable": true,
+                      "name": "user_id"
+                    }
+                  },
+                  "operation": "=",
+                  "table": "roles"
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            }
+          }
+        },
+        "output": true,
+        "meta": [],
+        "outputType": "object"
+      }
+    ]
+  }
+}

@@ -1,0 +1,55 @@
+<!-- Wappler include head-page="layouts/main" is="dmx-app" id="loginpage" appConnect="local" bootstrap5="local" components="{dmxValidator:{},dmxNotifications:{},dmxBrowser:{},dmxBootstrap5Modal:{}}" fontawesome_5="cdn" -->
+<meta name="ac:route" content="/login-page">
+<div class="container border border-2 rounded rounded-2 border-info mt-4 bg-dark text-light">
+    <div class="modal" id="modal-warning" is="dmx-bs5-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p class="text-center text-warning"><i class="fa-solid fa-circle-exclamation fa-6x"></i></p>
+                    <h4 class="text-center fw-light">Error!</h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div is="dmx-browser" id="browser1"></div>
+    <dmx-notifications id="notifies1"></dmx-notifications>
+    <form id="login1" is="dmx-serverconnect-form" method="post" dmx-on:success="browser1.goto('/')" dmx-on:unauthorized="browser1.alert('Wrong credentials... Try again with the right email and password or register a new account... ;-)');login1.reset();browser1.goto('/login-page')" action="/api/registration/login" dmx-on:forbidden="browser1.alert('I think you have not validated your account. I\'ll take you to the validation page...');login1.reset();browser1.goto('/Validate-Account')" dmx-on:error="browser1.alert('Error!')" dmx-on:invalid="browser1.alert('Wrong credentials. I think you messed up your password entry or gave the wrong email address. Try again please...')">
+        <div class="row mt-3">
+            <div class="col-12 col-md-8 col-lg-7 col-xl-5 text-start">
+                <div class="row">
+                    <div class="col">
+                        <h1>Log In</h1>
+                        <p class="text-h3">Enter your details below.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col mt-4">
+                        <input type="text" id="inp_email" name="email" class="form-control" placeholder="Email" required="" data-rule-email="">
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col">
+                        <input type="password" id="inp_password" name="password" class="form-control" placeholder="Password" required="" minlength="8">
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input mt-3" type="checkbox" value="1" id="input1" name="remember">
+                            <label class="form-check-label mt-3" for="input1">Remember me</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col">
+                        <button id="login1_submit" class="btn btn-success mb-3 pb-2" type="submit">Login</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

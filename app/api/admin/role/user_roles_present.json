@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      },
+      {
+        "type": "text",
+        "name": "user_id"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "query",
+        "module": "dbconnector",
+        "action": "select",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "select",
+            "columns": [
+              {
+                "table": "roles",
+                "column": "*"
+              },
+              {
+                "table": "authorized_roles",
+                "column": "rolename"
+              }
+            ],
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_GET.user_id}}",
+                "test": ""
+              }
+            ],
+            "table": {
+              "name": "roles"
+            },
+            "primary": "role_id",
+            "joins": [
+              {
+                "table": "authorized_roles",
+                "column": "*",
+                "type": "INNER",
+                "clauses": {
+                  "condition": "AND",
+                  "rules": [
+                    {
+                      "table": "authorized_roles",
+                      "column": "role",
+                      "operator": "equal",
+                      "operation": "=",
+                      "value": {
+                        "table": "roles",
+                        "column": "role"
+                      }
+                    }
+                  ]
+                },
+                "primary": "authorized_roles_id"
+              }
+            ],
+            "query": "select `roles`.*, `authorized_roles`.`rolename` from `roles` inner join `authorized_roles` on `authorized_roles`.`role` = `roles`.`role` where `roles`.`user_id` = ?",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "roles.user_id",
+                  "field": "roles.user_id",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{$_GET.user_id}}",
+                  "data": {
+                    "table": "roles",
+                    "column": "user_id",
+                    "type": "text",
+                    "columnObj": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "primary": false,
+                      "unique": false,
+                      "nullable": true,
+                      "name": "user_id"
+                    }
+                  },
+                  "operation": "=",
+                  "table": "roles"
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            }
+          }
+        },
+        "output": true,
+        "meta": [],
+        "outputType": "array"
+      }
+    ]
+  }
+}

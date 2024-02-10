@@ -1,0 +1,469 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      },
+      {
+        "type": "text",
+        "name": "pagetype"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator",
+            "Editor"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "query",
+        "module": "dbconnector",
+        "action": "select",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "select",
+            "columns": [
+              {
+                "table": "pagecontent",
+                "column": "*"
+              },
+              {
+                "table": "pagecreatorid",
+                "column": "first_name"
+              },
+              {
+                "table": "pagecreatorid",
+                "column": "last_name"
+              },
+              {
+                "table": "editoruserid",
+                "column": "first_name",
+                "alias": "editor_first_name"
+              },
+              {
+                "table": "editoruserid",
+                "column": "last_name",
+                "alias": "editor_last_name",
+                "aggregate": ""
+              }
+            ],
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_GET.pagetype}}",
+                "test": ""
+              }
+            ],
+            "table": {
+              "name": "pagecontent"
+            },
+            "primary": "pagecontent_id",
+            "joins": [
+              {
+                "table": "user",
+                "column": "*",
+                "alias": "pagecreatorid",
+                "type": "INNER",
+                "clauses": {
+                  "condition": "AND",
+                  "rules": [
+                    {
+                      "table": "pagecreatorid",
+                      "column": "user_id",
+                      "operator": "equal",
+                      "operation": "=",
+                      "value": {
+                        "table": "pagecontent",
+                        "column": "creator_id"
+                      }
+                    }
+                  ]
+                },
+                "primary": "user_id"
+              },
+              {
+                "table": "user",
+                "column": "*",
+                "alias": "editoruserid",
+                "type": "INNER",
+                "clauses": {
+                  "condition": "AND",
+                  "rules": [
+                    {
+                      "table": "editoruserid",
+                      "column": "user_id",
+                      "operator": "equal",
+                      "operation": "=",
+                      "value": {
+                        "table": "pagecontent",
+                        "column": "lasteditor_id"
+                      }
+                    }
+                  ]
+                },
+                "primary": "user_id"
+              }
+            ],
+            "sub": {
+              "pageimages": {
+                "type": "select",
+                "table": {
+                  "name": "pagecontent_pageimages",
+                  "alias": "pageimages"
+                },
+                "key": "pagecontent_id",
+                "columns": [
+                  {
+                    "table": "pageimages",
+                    "column": "imagelink"
+                  },
+                  {
+                    "table": "pageimages",
+                    "column": "order"
+                  },
+                  {
+                    "table": "pageimages",
+                    "column": "pagecontent_id"
+                  },
+                  {
+                    "table": "image_creator_user",
+                    "column": "first_name"
+                  },
+                  {
+                    "table": "image_creator_user",
+                    "column": "last_name"
+                  }
+                ],
+                "params": [],
+                "primary": "pageimages_id",
+                "joins": [
+                  {
+                    "table": "user",
+                    "column": "*",
+                    "alias": "image_creator_user",
+                    "type": "INNER",
+                    "clauses": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "table": "image_creator_user",
+                          "column": "user_id",
+                          "operator": "equal",
+                          "operation": "=",
+                          "value": {
+                            "table": "pageimages",
+                            "column": "imagecreator_id"
+                          }
+                        }
+                      ]
+                    },
+                    "primary": "user_id"
+                  }
+                ],
+                "orders": [
+                  {
+                    "table": "pageimages",
+                    "column": "order",
+                    "direction": "ASC"
+                  }
+                ],
+                "query": "select `pageimages`.`imagelink`, `pageimages`.`order`, `pageimages`.`pagecontent_id`, `image_creator_user`.`first_name`, `image_creator_user`.`last_name` from `pagecontent_pageimages` as `pageimages` inner join `user` as `image_creator_user` on `image_creator_user`.`user_id` = `pageimages`.`imagecreator_id` order by `pageimages`.`order` ASC"
+              },
+              "pagevideos": {
+                "type": "select",
+                "table": {
+                  "name": "pagecontent_pagevideos",
+                  "alias": "pagevideos"
+                },
+                "key": "pagecontent_id",
+                "columns": [
+                  {
+                    "table": "pagevideos",
+                    "column": "videolink"
+                  },
+                  {
+                    "table": "pagevideos",
+                    "column": "videoflagged"
+                  },
+                  {
+                    "table": "pagevideos",
+                    "column": "videoauthorized"
+                  },
+                  {
+                    "table": "pagevideos",
+                    "column": "videoonline"
+                  },
+                  {
+                    "table": "pagevideos",
+                    "column": "order"
+                  },
+                  {
+                    "table": "video_creator_user",
+                    "column": "first_name"
+                  },
+                  {
+                    "table": "video_creator_user",
+                    "column": "last_name"
+                  }
+                ],
+                "params": [],
+                "primary": "pagevideos_id",
+                "joins": [
+                  {
+                    "table": "user",
+                    "column": "*",
+                    "alias": "video_creator_user",
+                    "type": "INNER",
+                    "clauses": {
+                      "condition": "AND",
+                      "rules": [
+                        {
+                          "table": "video_creator_user",
+                          "column": "user_id",
+                          "operator": "equal",
+                          "operation": "=",
+                          "value": {
+                            "table": "pagevideos",
+                            "column": "videocreator_id"
+                          }
+                        }
+                      ]
+                    },
+                    "primary": "user_id"
+                  }
+                ],
+                "orders": [
+                  {
+                    "table": "pagevideos",
+                    "column": "order",
+                    "direction": "ASC"
+                  }
+                ],
+                "query": "select `pagevideos`.`videolink`, `pagevideos`.`videoflagged`, `pagevideos`.`videoauthorized`, `pagevideos`.`videoonline`, `pagevideos`.`order`, `video_creator_user`.`first_name`, `video_creator_user`.`last_name` from `pagecontent_pagevideos` as `pagevideos` inner join `user` as `video_creator_user` on `video_creator_user`.`user_id` = `pagevideos`.`videocreator_id` order by `pagevideos`.`order` ASC"
+              },
+              "comments": {
+                "type": "select",
+                "table": {
+                  "name": "pagecontent_comments",
+                  "alias": "comments"
+                },
+                "key": "pagecontent_id",
+                "columns": [
+                  {
+                    "table": "comments",
+                    "column": "comment"
+                  },
+                  {
+                    "table": "comments",
+                    "column": "commentflagged"
+                  },
+                  {
+                    "table": "comments",
+                    "column": "commentauthorized"
+                  }
+                ],
+                "params": [],
+                "primary": "comments_id",
+                "joins": [],
+                "sub": {
+                  "reactions": {
+                    "type": "select",
+                    "table": {
+                      "name": "pagecontent_comment_reactions",
+                      "alias": "reactions"
+                    },
+                    "key": "comments_id",
+                    "columns": [
+                      {
+                        "table": "reactions",
+                        "column": "reaction"
+                      },
+                      {
+                        "table": "reactionuserid",
+                        "column": "first_name"
+                      },
+                      {
+                        "table": "reactionuserid",
+                        "column": "last_name"
+                      }
+                    ],
+                    "params": [],
+                    "joins": [
+                      {
+                        "table": "user",
+                        "column": "*",
+                        "alias": "reactionuserid",
+                        "type": "INNER",
+                        "clauses": {
+                          "condition": "AND",
+                          "rules": [
+                            {
+                              "table": "reactionuserid",
+                              "column": "user_id",
+                              "operator": "equal",
+                              "operation": "=",
+                              "value": {
+                                "table": "reactions",
+                                "column": "user_id"
+                              }
+                            }
+                          ]
+                        },
+                        "primary": "user_id"
+                      }
+                    ],
+                    "query": "select `reactions`.`reaction`, `reactionuserid`.`first_name`, `reactionuserid`.`last_name` from `pagecontent_comment_reactions` as `reactions` inner join `user` as `reactionuserid` on `reactionuserid`.`user_id` = `reactions`.`user_id`"
+                  }
+                },
+                "query": "select `comment`, `commentflagged`, `commentauthorized` from `pagecontent_comments` as `comments`"
+              }
+            },
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "pagecontent.pagetype",
+                  "field": "pagecontent.pagetype",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{$_GET.pagetype}}",
+                  "data": {
+                    "table": "pagecontent",
+                    "column": "pagetype",
+                    "type": "text",
+                    "columnObj": {
+                      "type": "string",
+                      "maxLength": 1,
+                      "primary": false,
+                      "unique": false,
+                      "nullable": true,
+                      "name": "pagetype"
+                    }
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "query": "select `pagecontent`.*, `pagecreatorid`.`first_name`, `pagecreatorid`.`last_name`, `editoruserid`.`first_name` as `editor_first_name`, `editoruserid`.`last_name` as `editor_last_name` from `pagecontent` inner join `user` as `pagecreatorid` on `pagecreatorid`.`user_id` = `pagecontent`.`creator_id` inner join `user` as `editoruserid` on `editoruserid`.`user_id` = `pagecontent`.`lasteditor_id` where `pagecontent`.`pagetype` = ?"
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "type": "number",
+            "name": "pagecontent_id"
+          },
+          {
+            "type": "text",
+            "name": "pagetitle"
+          },
+          {
+            "type": "text",
+            "name": "pagedescription"
+          },
+          {
+            "type": "boolean",
+            "name": "contentonline"
+          },
+          {
+            "type": "boolean",
+            "name": "contentprivate"
+          },
+          {
+            "type": "datetime",
+            "name": "pagedatecreated"
+          },
+          {
+            "type": "datetime",
+            "name": "pageediteddate"
+          },
+          {
+            "type": "number",
+            "name": "pageeditor"
+          },
+          {
+            "type": "number",
+            "name": "pagecreator"
+          },
+          {
+            "type": "text",
+            "name": "pagetype"
+          },
+          {
+            "type": "text",
+            "name": "channelname"
+          },
+          {
+            "type": "number",
+            "name": "pageorder"
+          },
+          {
+            "type": "number",
+            "name": "homepageorder"
+          },
+          {
+            "name": "pageimages",
+            "type": "array",
+            "sub": [
+              {
+                "type": "text",
+                "name": "imagelink"
+              },
+              {
+                "type": "number",
+                "name": "pagecontent_id"
+              }
+            ]
+          },
+          {
+            "name": "pagevideos",
+            "type": "array",
+            "sub": [
+              {
+                "type": "text",
+                "name": "videolink"
+              },
+              {
+                "type": "boolean",
+                "name": "videoflagged"
+              }
+            ]
+          },
+          {
+            "name": "comments",
+            "type": "array",
+            "sub": [
+              {
+                "name": "reactions",
+                "type": "array",
+                "sub": []
+              }
+            ]
+          }
+        ],
+        "outputType": "array"
+      }
+    ]
+  }
+}

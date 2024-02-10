@@ -1,0 +1,242 @@
+{
+  "meta": {
+    "options": {
+      "linkedFile": "/views/Validate-Account.ejs",
+      "linkedForm": "validateaccount"
+    },
+    "$_POST": [
+      {
+        "type": "text",
+        "fieldName": "confirmation_code",
+        "options": {
+          "rules": {
+            "core:required": {
+              "param": ""
+            },
+            "core:minlength": {
+              "param": "6"
+            }
+          }
+        },
+        "name": "confirmation_code"
+      },
+      {
+        "type": "text",
+        "fieldName": "email",
+        "options": {
+          "rules": {
+            "core:required": {
+              "param": ""
+            },
+            "core:email": {
+              "param": ""
+            }
+          }
+        },
+        "name": "email"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "identity",
+        "module": "auth",
+        "action": "identify",
+        "options": {
+          "provider": "livegiggysec"
+        },
+        "output": true,
+        "meta": []
+      },
+      {
+        "name": "query",
+        "module": "dbconnector",
+        "action": "single",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "select",
+            "columns": [
+              {
+                "table": "user",
+                "column": "user_id"
+              }
+            ],
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_POST.email}}",
+                "test": ""
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P2",
+                "value": "{{identity}}",
+                "test": ""
+              }
+            ],
+            "table": {
+              "name": "user"
+            },
+            "primary": "user_id",
+            "joins": [],
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "user.email",
+                  "field": "user.email",
+                  "type": "string",
+                  "operator": "equal",
+                  "value": "{{$_POST.email}}",
+                  "data": {
+                    "table": "user",
+                    "column": "email",
+                    "type": "text",
+                    "columnObj": {
+                      "type": "string",
+                      "maxLength": 255,
+                      "primary": false,
+                      "unique": false,
+                      "nullable": true,
+                      "name": "email"
+                    }
+                  },
+                  "operation": "=",
+                  "table": "user"
+                },
+                {
+                  "id": "user.user_id",
+                  "field": "user.user_id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{identity}}",
+                  "data": {
+                    "table": "user",
+                    "column": "user_id",
+                    "type": "number",
+                    "columnObj": {
+                      "type": "increments",
+                      "primary": true,
+                      "unique": false,
+                      "nullable": false,
+                      "name": "user_id"
+                    }
+                  },
+                  "operation": "=",
+                  "table": "user"
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "query": "select `user_id` from `user` where `user`.`email` = ? and `user`.`user_id` = ?"
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "type": "number",
+            "name": "user_id"
+          }
+        ],
+        "outputType": "object"
+      },
+      {
+        "name": "",
+        "module": "core",
+        "action": "condition",
+        "options": {
+          "if": "{{query.user_id.length()>0}}",
+          "then": {
+            "steps": {
+              "name": "update",
+              "module": "dbupdater",
+              "action": "update",
+              "options": {
+                "connection": "db",
+                "sql": {
+                  "type": "update",
+                  "values": [
+                    {
+                      "table": "user",
+                      "column": "confirmation_code",
+                      "type": "text",
+                      "value": "",
+                      "recid": 1
+                    },
+                    {
+                      "table": "user",
+                      "column": "validated_date",
+                      "type": "datetime",
+                      "value": "{{NOW}}",
+                      "recid": 2
+                    }
+                  ],
+                  "table": "user",
+                  "wheres": {
+                    "condition": "AND",
+                    "rules": [
+                      {
+                        "id": "user_id",
+                        "field": "user_id",
+                        "type": "double",
+                        "operator": "equal",
+                        "value": "{{query.user_id}}",
+                        "data": {
+                          "column": "user_id"
+                        },
+                        "operation": "="
+                      }
+                    ],
+                    "conditional": null,
+                    "valid": true
+                  },
+                  "returning": "user_id",
+                  "query": "update `user` set `confirmation_code` = ?, `validated_date` = ? where `user_id` = ? returning `user_id`",
+                  "params": [
+                    {
+                      "name": ":P1",
+                      "type": "expression",
+                      "value": "{{NOW}}",
+                      "test": ""
+                    },
+                    {
+                      "operator": "equal",
+                      "type": "expression",
+                      "name": ":P2",
+                      "value": "{{query.user_id}}",
+                      "test": ""
+                    }
+                  ]
+                }
+              },
+              "meta": [
+                {
+                  "name": "affected",
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          "else": {
+            "steps": {
+              "name": "Unauthorized",
+              "module": "core",
+              "action": "response",
+              "options": {
+                "status": 401,
+                "data": "Unauthorized!"
+              }
+            }
+          }
+        },
+        "outputType": "boolean"
+      }
+    ]
+  }
+}

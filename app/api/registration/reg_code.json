@@ -1,0 +1,9 @@
+{
+  "name": "reg_code",
+  "module": "core",
+  "action": "setsession",
+  "options": {
+    "value": "{{UUID}}"
+  },
+  "output": true
+}

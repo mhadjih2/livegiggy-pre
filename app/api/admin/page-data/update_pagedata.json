@@ -1,0 +1,245 @@
+{
+  "meta": {
+    "$_POST": [
+      {
+        "type": "text",
+        "name": "pagetitle"
+      },
+      {
+        "type": "text",
+        "name": "pagedescription"
+      },
+      {
+        "type": "boolean",
+        "name": "pagecontentonline"
+      },
+      {
+        "type": "boolean",
+        "name": "pagecontentprivate"
+      },
+      {
+        "type": "datetime",
+        "name": "eventstartdatetime"
+      },
+      {
+        "type": "datetime",
+        "name": "eventenddatetime"
+      },
+      {
+        "type": "number",
+        "name": "latitude"
+      },
+      {
+        "type": "number",
+        "name": "longitude"
+      },
+      {
+        "type": "boolean",
+        "name": "geocoded"
+      },
+      {
+        "type": "number",
+        "name": "lasteditor_id"
+      },
+      {
+        "type": "number",
+        "name": "pagecontent_id"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "update",
+        "module": "dbupdater",
+        "action": "update",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "update",
+            "values": [
+              {
+                "table": "pagecontent",
+                "column": "pagetitle",
+                "type": "text",
+                "value": "{{$_POST.pagetitle}}"
+              },
+              {
+                "table": "pagecontent",
+                "column": "pagedescription",
+                "type": "text",
+                "value": "{{$_POST.pagedescription}}"
+              },
+              {
+                "table": "pagecontent",
+                "column": "pagecontentonline",
+                "type": "boolean",
+                "value": "{{$_POST.pagecontentonline.default(0)}}"
+              },
+              {
+                "table": "pagecontent",
+                "column": "pagecontentprivate",
+                "type": "boolean",
+                "value": "{{$_POST.pagecontentprivate.default(0)}}"
+              },
+              {
+                "table": "pagecontent",
+                "column": "pagecontentdateedited",
+                "type": "datetime",
+                "value": "{{NOW}}"
+              },
+              {
+                "table": "pagecontent",
+                "column": "eventstartdatetime",
+                "type": "datetime",
+                "value": "{{$_POST.eventstartdatetime}}"
+              },
+              {
+                "table": "pagecontent",
+                "column": "eventenddatetime",
+                "type": "datetime",
+                "value": "{{$_POST.eventenddatetime}}"
+              },
+              {
+                "table": "pagecontent",
+                "column": "latitude",
+                "type": "number",
+                "value": "{{$_POST.latitude}}"
+              },
+              {
+                "table": "pagecontent",
+                "column": "longitude",
+                "type": "number",
+                "value": "{{$_POST.longitude}}"
+              },
+              {
+                "table": "pagecontent",
+                "column": "geocoded",
+                "type": "boolean",
+                "value": "{{$_POST.geocoded.default(0)}}"
+              },
+              {
+                "table": "pagecontent",
+                "column": "lasteditor_id",
+                "type": "number",
+                "value": "{{$_POST.lasteditor_id}}"
+              }
+            ],
+            "table": "pagecontent",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "pagecontent_id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{$_POST.pagecontent_id}}",
+                  "data": {
+                    "column": "pagecontent_id"
+                  },
+                  "operation": "="
+                }
+              ]
+            },
+            "returning": "pagecontent_id",
+            "query": "update `pagecontent` set `pagetitle` = ?, `pagedescription` = ?, `pagecontentonline` = ?, `pagecontentprivate` = ?, `pagecontentdateedited` = ?, `eventstartdatetime` = ?, `eventenddatetime` = ?, `latitude` = ?, `longitude` = ?, `geocoded` = ?, `lasteditor_id` = ? where `pagecontent_id` = ? returning `pagecontent_id`",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{$_POST.pagetitle}}",
+                "test": ""
+              },
+              {
+                "name": ":P2",
+                "type": "expression",
+                "value": "{{$_POST.pagedescription}}",
+                "test": ""
+              },
+              {
+                "name": ":P3",
+                "type": "expression",
+                "value": "{{$_POST.pagecontentonline.default(0)}}",
+                "test": ""
+              },
+              {
+                "name": ":P4",
+                "type": "expression",
+                "value": "{{$_POST.pagecontentprivate.default(0)}}",
+                "test": ""
+              },
+              {
+                "name": ":P5",
+                "type": "expression",
+                "value": "{{NOW}}",
+                "test": ""
+              },
+              {
+                "name": ":P6",
+                "type": "expression",
+                "value": "{{$_POST.eventstartdatetime}}",
+                "test": ""
+              },
+              {
+                "name": ":P7",
+                "type": "expression",
+                "value": "{{$_POST.eventenddatetime}}",
+                "test": ""
+              },
+              {
+                "name": ":P8",
+                "type": "expression",
+                "value": "{{$_POST.latitude}}",
+                "test": ""
+              },
+              {
+                "name": ":P9",
+                "type": "expression",
+                "value": "{{$_POST.longitude}}",
+                "test": ""
+              },
+              {
+                "name": ":P10",
+                "type": "expression",
+                "value": "{{$_POST.geocoded.default(0)}}",
+                "test": ""
+              },
+              {
+                "name": ":P11",
+                "type": "expression",
+                "value": "{{$_POST.lasteditor_id}}",
+                "test": ""
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P12",
+                "value": "{{$_POST.pagecontent_id}}",
+                "test": ""
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  }
+}

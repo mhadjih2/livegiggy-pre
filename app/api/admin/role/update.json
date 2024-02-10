@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "$_POST": [
+      {
+        "type": "text",
+        "name": "user_id"
+      },
+      {
+        "type": "text",
+        "name": "role"
+      },
+      {
+        "type": "number",
+        "name": "role_id"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "update",
+        "module": "dbupdater",
+        "action": "update",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "update",
+            "values": [
+              {
+                "table": "roles",
+                "column": "user_id",
+                "type": "text",
+                "value": "{{$_POST.user_id}}"
+              },
+              {
+                "table": "roles",
+                "column": "role",
+                "type": "text",
+                "value": "{{$_POST.role}}"
+              }
+            ],
+            "table": "roles",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "role_id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{$_POST.role_id}}",
+                  "data": {
+                    "column": "role_id"
+                  },
+                  "operation": "="
+                }
+              ]
+            },
+            "returning": "role_id",
+            "query": "update `roles` set `user_id` = ?, `role` = ? where `role_id` = ?",
+            "params": [
+              {
+                "name": ":P1",
+                "type": "expression",
+                "value": "{{$_POST.user_id}}",
+                "test": ""
+              },
+              {
+                "name": ":P2",
+                "type": "expression",
+                "value": "{{$_POST.role}}",
+                "test": ""
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P3",
+                "value": "{{$_POST.role_id}}",
+                "test": ""
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  }
+}

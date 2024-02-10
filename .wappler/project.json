@@ -1,0 +1,41 @@
+{
+  "hostingType": "wappler",
+  "projectServerModel": "node",
+  "runtime": "capacitor",
+  "projectName": "livegiggy-pre-prod",
+  "webRootFolder": "/public",
+  "useRouting": true,
+  "addBase": true,
+  "routingHandler": "node",
+  "projectLinksType": "site",
+  "targets": [
+    {
+      "name": "Development",
+      "remoteURL": "http://localhost:3000/",
+      "access": "local",
+      "targetType": "wappler",
+      "databaseConnectionType": "sqlite",
+      "sqliteDbFile": "/db/db_dev.sqlite3"
+    }
+  ],
+  "activeTarget": "Development",
+  "projectType": "web",
+  "designFramework": "bootstrap5",
+  "assetsFolder": "/assets",
+  "userUploadsFolder": "/public/useruploads",
+  "frameworks": [
+    {
+      "name": "appConnect",
+      "type": "local"
+    },
+    {
+      "name": "fontawesome_5",
+      "type": "cdn"
+    },
+    {
+      "name": "bootstrap5",
+      "type": "local"
+    }
+  ],
+  "extensions": []
+}

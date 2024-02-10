@@ -1,0 +1,49 @@
+<!-- Wappler include head-page="layouts/main" is="dmx-app" id="ValidateAccount" appConnect="local" bootstrap5="local" fontawesome_5="cdn" components="{dmxValidator:{},dmxNotifications:{},dmxBrowser:{},dmxTyped:{},dmxBootstrap5Toasts:{}}" -->
+<div is="dmx-browser" id="browser1"></div>
+<dmx-notifications id="notifies1">
+
+</dmx-notifications>
+<div class="container mt-5 border rounded rounded-2 border-info border-2 text-light bg-dark">
+    <div class="row">
+        <div class="col">
+            <h1 class="mt-3">Validate your account</h1>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col">
+            <p class="mt-3">You must now validate your account and fill in the number that has been sent to your registered email-account. Unverified accounts will be removed after 48 hours.</p>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mt-2">
+            <form id="validateaccount" is="dmx-serverconnect-form" method="post" action="/api/registration/validate_code" dmx-on:unauthorized="notifies1.warning('Unauthorized!')" dmx-on:error="notifies1.danger('Server error!')" dmx-on:success="notifies1.success('Success!');form1.reset(true);browser1.goto('/')">
+
+                <div class="form-group mb-3 row">
+                    <label for="confirmation_code" class="col-sm-2 col-form-label">Validation Code</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="confirmation_code" name="confirmation_code" aria-describedby="input1_help" placeholder="Enter Validation Code" required="" minlength="6">
+                    </div>
+                </div>
+                <div class="form-group mb-3 row">
+                    <label for="email" class="col-sm-2 col-form-label">Your registered emailaddress</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="email" name="email" aria-describedby="input2_help" placeholder="Type in your emailaddress" required="" data-rule-email="">
+                    </div>
+                </div>
+                <div class="form-group mb-3 row">
+                    <div class="col-2">
+
+                    </div>
+                    <div class="col-sm-6">
+                        &nbsp;<button id="btn1_submit" type="submit" class="btn btn-primary text-light bg-primary mt-0 mb-2 me-0">Validate Account</button></div>
+                    <div class="col"><button id="resend_code" class="btn btn-primary fst-italic mt-1 ms-3 bg-success-subtle text-dark-emphasis" dmx-on:click="run([{'toast.show':{message:'Serverconnection is being set up, hold one for one second...',closable:false,delay:2000}},{serverConnect:{url:'/api/registration/send_authcode',site:'testing2',name:'sc',outputType:'object'}},{'toast.clear':{}},{wait:{delay:1000}},{run:{action:`notifies1.success(\'Mail sent!\')`,outputType:'text'}},{wait:{delay:2000}},{run:{action:`browser1.reload()`,outputType:'text'}}])">Resend Code</button></div>
+
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+<meta name="ac:route" content="/Validate-Account">

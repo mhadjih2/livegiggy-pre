@@ -1,0 +1,540 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "sort"
+      },
+      {
+        "type": "text",
+        "name": "dir"
+      },
+      {
+        "type": "text",
+        "name": "pagetype"
+      }
+    ]
+  },
+  "exec": {
+    "steps": {
+      "name": "query",
+      "module": "dbconnector",
+      "action": "select",
+      "options": {
+        "connection": "db",
+        "sql": {
+          "type": "select",
+          "columns": [
+            {
+              "table": "pagecontent",
+              "column": "*"
+            },
+            {
+              "table": "pagecontentcerator",
+              "column": "firstname"
+            },
+            {
+              "table": "pagecontentcerator",
+              "column": "lastname"
+            },
+            {
+              "table": "pagecontentcerator",
+              "column": "username"
+            },
+            {
+              "table": "pagecontentcerator",
+              "column": "email"
+            },
+            {
+              "table": "pagecontentcerator",
+              "column": "avatar"
+            },
+            {
+              "table": "pagecontentcerator",
+              "column": "userflagged"
+            },
+            {
+              "table": "pagecontentcerator",
+              "column": "userupforremoval"
+            }
+          ],
+          "params": [
+            {
+              "operator": "equal",
+              "type": "expression",
+              "name": ":P1",
+              "value": "{{$_GET.pagetype}}",
+              "test": ""
+            }
+          ],
+          "table": {
+            "name": "pagecontent"
+          },
+          "primary": "pagecontent_id",
+          "joins": [
+            {
+              "table": "user",
+              "column": "*",
+              "alias": "pagecontentcerator",
+              "type": "INNER",
+              "clauses": {
+                "condition": "AND",
+                "rules": [
+                  {
+                    "table": "pagecontentcerator",
+                    "column": "user_id",
+                    "operator": "equal",
+                    "operation": "=",
+                    "value": {
+                      "table": "pagecontent",
+                      "column": "pagecreator"
+                    }
+                  }
+                ]
+              },
+              "primary": "user_id",
+              "sub": {
+                "channels": {
+                  "type": "select",
+                  "table": {
+                    "name": "user_channels",
+                    "alias": "channels"
+                  },
+                  "key": "user_id",
+                  "columns": [
+                    {
+                      "table": "channels",
+                      "column": "*"
+                    }
+                  ],
+                  "params": [],
+                  "primary": "channel_id",
+                  "joins": [],
+                  "query": "select * from `user_channels` as `channels`"
+                }
+              }
+            }
+          ],
+          "wheres": {
+            "condition": "AND",
+            "rules": [
+              {
+                "id": "pagecontent.pagetype",
+                "field": "pagecontent.pagetype",
+                "type": "string",
+                "operator": "equal",
+                "value": "{{$_GET.pagetype}}",
+                "data": {
+                  "table": "pagecontent",
+                  "column": "pagetype",
+                  "type": "text",
+                  "columnObj": {
+                    "type": "string",
+                    "maxLength": 1,
+                    "primary": false,
+                    "unique": false,
+                    "nullable": true,
+                    "name": "pagetype"
+                  }
+                },
+                "operation": "=",
+                "table": "pagecontent"
+              }
+            ],
+            "conditional": null,
+            "valid": true
+          },
+          "query": "select `pagecontent`.*, `pagecontentcerator`.`firstname`, `pagecontentcerator`.`lastname`, `pagecontentcerator`.`username`, `pagecontentcerator`.`email`, `pagecontentcerator`.`avatar`, `pagecontentcerator`.`userflagged`, `pagecontentcerator`.`userupforremoval` from `pagecontent` inner join `user` as `pagecontentcerator` on `pagecontentcerator`.`user_id` = `pagecontent`.`pagecreator` where `pagecontent`.`pagetype` = ?",
+          "sub": {
+            "pageimages": {
+              "type": "select",
+              "table": {
+                "name": "pagecontent_pageimages",
+                "alias": "pageimages"
+              },
+              "key": "pagecontent_id",
+              "columns": [
+                {
+                  "table": "pageimages",
+                  "column": "*"
+                }
+              ],
+              "params": [],
+              "primary": "pageimages_id",
+              "joins": [],
+              "orders": [],
+              "query": "select * from `pagecontent_pageimages` as `pageimages`"
+            },
+            "pagevideos": {
+              "type": "select",
+              "table": {
+                "name": "pagecontent_pagevideos",
+                "alias": "pagevideos"
+              },
+              "key": "pagecontent_id",
+              "columns": [
+                {
+                  "table": "pagevideos",
+                  "column": "*"
+                }
+              ],
+              "params": [],
+              "primary": "pagevideos_id",
+              "joins": [],
+              "query": "select * from `pagecontent_pagevideos` as `pagevideos`"
+            },
+            "pagecomments": {
+              "type": "select",
+              "table": {
+                "name": "pagecontent_pagecomments",
+                "alias": "pagecomments"
+              },
+              "key": "pagecontent_id",
+              "columns": [
+                {
+                  "table": "pagecomments",
+                  "column": "*"
+                }
+              ],
+              "params": [],
+              "primary": "id",
+              "joins": [],
+              "query": "select * from `pagecontent_pagecomments` as `pagecomments`"
+            },
+            "reactions": {
+              "type": "select",
+              "table": {
+                "name": "pagecontent_reactions",
+                "alias": "reactions"
+              },
+              "key": "pagecontent_id",
+              "columns": [
+                {
+                  "table": "reactions",
+                  "column": "*"
+                }
+              ],
+              "params": [],
+              "joins": [],
+              "query": "select * from `pagecontent_reactions` as `reactions`"
+            }
+          }
+        }
+      },
+      "output": true,
+      "meta": [
+        {
+          "type": "number",
+          "name": "pagecontent_id"
+        },
+        {
+          "type": "text",
+          "name": "pagetitle"
+        },
+        {
+          "type": "text",
+          "name": "pagedescription"
+        },
+        {
+          "type": "boolean",
+          "name": "contentonline"
+        },
+        {
+          "type": "boolean",
+          "name": "contentprivate"
+        },
+        {
+          "type": "datetime",
+          "name": "pagedatecreated"
+        },
+        {
+          "type": "datetime",
+          "name": "pageediteddate"
+        },
+        {
+          "type": "number",
+          "name": "pageeditor"
+        },
+        {
+          "type": "number",
+          "name": "pagecreator"
+        },
+        {
+          "type": "text",
+          "name": "pagetype"
+        },
+        {
+          "type": "text",
+          "name": "channelname"
+        },
+        {
+          "type": "number",
+          "name": "pageorder"
+        },
+        {
+          "type": "number",
+          "name": "homepageorder"
+        },
+        {
+          "type": "text",
+          "name": "firstname"
+        },
+        {
+          "name": "channels",
+          "type": "array",
+          "sub": [
+            {
+              "type": "number",
+              "name": "channel_id"
+            },
+            {
+              "type": "text",
+              "name": "channelname"
+            },
+            {
+              "type": "number",
+              "name": "user_id"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "name": "lastname"
+        },
+        {
+          "type": "text",
+          "name": "username"
+        },
+        {
+          "type": "text",
+          "name": "email"
+        },
+        {
+          "type": "text",
+          "name": "avatar"
+        },
+        {
+          "type": "boolean",
+          "name": "userflagged"
+        },
+        {
+          "type": "boolean",
+          "name": "userupforremoval"
+        },
+        {
+          "name": "pageimages",
+          "type": "array",
+          "sub": [
+            {
+              "type": "number",
+              "name": "pageimages_id"
+            },
+            {
+              "type": "text",
+              "name": "imagelink"
+            },
+            {
+              "type": "number",
+              "name": "creator_id"
+            },
+            {
+              "type": "number",
+              "name": "pagecontent_id"
+            },
+            {
+              "type": "boolean",
+              "name": "imageflagged"
+            },
+            {
+              "type": "datetime",
+              "name": "imageflagdate"
+            },
+            {
+              "type": "boolean",
+              "name": "imageoffline"
+            },
+            {
+              "type": "number",
+              "name": "reviewer"
+            },
+            {
+              "type": "datetime",
+              "name": "reviewdate"
+            },
+            {
+              "type": "text",
+              "name": "coverimagelink"
+            },
+            {
+              "type": "datetime",
+              "name": "uploadimagedate"
+            },
+            {
+              "type": "number",
+              "name": "imageflagger"
+            },
+            {
+              "type": "text",
+              "name": "reviewnotes"
+            },
+            {
+              "type": "text",
+              "name": "imageflagreason"
+            },
+            {
+              "type": "text",
+              "name": "channelname"
+            }
+          ]
+        },
+        {
+          "name": "pagevideos",
+          "type": "array",
+          "sub": [
+            {
+              "type": "number",
+              "name": "pagevideos_id"
+            },
+            {
+              "type": "text",
+              "name": "videolink"
+            },
+            {
+              "type": "datetime",
+              "name": "videouploaddate"
+            },
+            {
+              "type": "number",
+              "name": "videocreator"
+            },
+            {
+              "type": "boolean",
+              "name": "videoflagged"
+            },
+            {
+              "type": "datetime",
+              "name": "flagdate"
+            },
+            {
+              "type": "number",
+              "name": "videoflagger"
+            },
+            {
+              "type": "number",
+              "name": "reviewer"
+            },
+            {
+              "type": "datetime",
+              "name": "reviewdate"
+            },
+            {
+              "type": "text",
+              "name": "reviewnotes"
+            },
+            {
+              "type": "boolean",
+              "name": "videooffline"
+            },
+            {
+              "type": "number",
+              "name": "pagecontent_id"
+            },
+            {
+              "type": "text",
+              "name": "videoflagreason"
+            },
+            {
+              "type": "text",
+              "name": "hlsvideolink"
+            },
+            {
+              "type": "text",
+              "name": "channelname"
+            }
+          ]
+        },
+        {
+          "name": "pagecomments",
+          "type": "array",
+          "sub": [
+            {
+              "type": "number",
+              "name": "id"
+            },
+            {
+              "type": "text",
+              "name": "comment"
+            },
+            {
+              "type": "datetime",
+              "name": "commentdate"
+            },
+            {
+              "type": "number",
+              "name": "user_id"
+            },
+            {
+              "type": "boolean",
+              "name": "commentflagged"
+            },
+            {
+              "type": "number",
+              "name": "commentflagger"
+            },
+            {
+              "type": "datetime",
+              "name": "commentflagdate"
+            },
+            {
+              "type": "text",
+              "name": "commentflagreason"
+            },
+            {
+              "type": "number",
+              "name": "reviewer"
+            },
+            {
+              "type": "datetime",
+              "name": "reviewdate"
+            },
+            {
+              "type": "text",
+              "name": "reviewnotes"
+            },
+            {
+              "type": "boolean",
+              "name": "commentoffline"
+            },
+            {
+              "type": "number",
+              "name": "pagecontent_id"
+            }
+          ]
+        },
+        {
+          "name": "reactions",
+          "type": "array",
+          "sub": [
+            {
+              "type": "number",
+              "name": "pagecontent_id"
+            },
+            {
+              "type": "text",
+              "name": "reaction"
+            },
+            {
+              "type": "number",
+              "name": "user_id"
+            },
+            {
+              "type": "datetime",
+              "name": "reactiondate"
+            }
+          ]
+        }
+      ],
+      "outputType": "array"
+    }
+  }
+}

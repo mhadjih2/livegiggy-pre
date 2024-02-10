@@ -1,0 +1,64 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "page": "index",
+      "layout": "main",
+      "method": "",
+      "name": "index"
+    },
+    {
+      "path": "/Registration",
+      "page": "Registration",
+      "layout": "main"
+    },
+    {
+      "path": "/TermsAndConditions",
+      "page": "TermsAndConditions",
+      "layout": "main"
+    },
+    {
+      "path": "/Validate-Account",
+      "page": "Validate-Account",
+      "layout": "main"
+    },
+    {
+      "path": "/login-page",
+      "page": "login-page",
+      "layout": "main"
+    },
+    {
+      "path": "/lgadmin",
+      "page": "lgadmin/admin-home",
+      "layout": "admin"
+    },
+    {
+      "path": "/lgseo/SEO-page",
+      "page": "lgseo/SEO-page",
+      "layout": "SEO-layout"
+    },
+    {
+      "path": "/lgadmin/manage-users",
+      "page": "lgadmin/manage-users",
+      "layout": "admin"
+    },
+    {
+      "path": "/lgadmin/page-content",
+      "page": "lgadmin/page-content",
+      "layout": "admin"
+    },
+    {
+      "path": "/testpage",
+      "page": "testpage",
+      "layout": "main"
+    }
+  ],
+  "layouts": {
+    "admin": {
+      "exec": "/api/security/is_admin"
+    },
+    "SEO-layout": {
+      "exec": "/api/security/is_SEO"
+    }
+  }
+}

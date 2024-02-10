@@ -1,0 +1,10 @@
+{
+  "name": "identity",
+  "module": "auth",
+  "action": "identify",
+  "options": {
+    "provider": "livegiggysec"
+  },
+  "output": true,
+  "meta": []
+}

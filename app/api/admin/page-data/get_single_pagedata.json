@@ -1,0 +1,256 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "pagecontent_id"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "Administrator",
+            "Editor"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "query",
+        "module": "dbconnector",
+        "action": "single",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "select",
+            "columns": [
+              {
+                "table": "pagecontent",
+                "column": "*"
+              }
+            ],
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_GET.pagecontent_id}}",
+                "test": ""
+              }
+            ],
+            "table": {
+              "name": "pagecontent"
+            },
+            "primary": "pagecontent_id",
+            "joins": [],
+            "query": "select * from `pagecontent` where `pagecontent`.`pagecontent_id` = ?",
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "pagecontent.pagecontent_id",
+                  "field": "pagecontent.pagecontent_id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{$_GET.pagecontent_id}}",
+                  "data": {
+                    "table": "pagecontent",
+                    "column": "pagecontent_id",
+                    "type": "number",
+                    "columnObj": {
+                      "type": "increments",
+                      "primary": true,
+                      "unique": false,
+                      "nullable": false,
+                      "name": "pagecontent_id"
+                    }
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "sub": {
+              "pageimages": {
+                "type": "select",
+                "table": {
+                  "name": "pagecontent_pageimages",
+                  "alias": "pageimages"
+                },
+                "key": "pagecontent_id",
+                "columns": [
+                  {
+                    "table": "pageimages",
+                    "column": "imagelink"
+                  },
+                  {
+                    "table": "pageimages",
+                    "column": "imagecreator_id"
+                  },
+                  {
+                    "table": "pageimages",
+                    "column": "pageimages_id"
+                  },
+                  {
+                    "table": "pageimages",
+                    "column": "order"
+                  }
+                ],
+                "params": [],
+                "primary": "pageimages_id",
+                "joins": [],
+                "query": "select `imagelink`, `imagecreator_id`, `pageimages_id`, `order` from `pagecontent_pageimages` as `pageimages` order by `order` ASC",
+                "orders": [
+                  {
+                    "table": "pageimages",
+                    "column": "order",
+                    "direction": "ASC"
+                  }
+                ]
+              },
+              "pagevideos": {
+                "type": "select",
+                "table": {
+                  "name": "pagecontent_pagevideos",
+                  "alias": "pagevideos"
+                },
+                "key": "pagecontent_id",
+                "columns": [
+                  {
+                    "table": "pagevideos",
+                    "column": "videolink"
+                  },
+                  {
+                    "table": "pagevideos",
+                    "column": "videocreator_id"
+                  },
+                  {
+                    "table": "pagevideos",
+                    "column": "videoflagged"
+                  },
+                  {
+                    "table": "pagevideos",
+                    "column": "videoauthorized"
+                  },
+                  {
+                    "table": "pagevideos",
+                    "column": "videoonline"
+                  },
+                  {
+                    "table": "pagevideos",
+                    "column": "order"
+                  }
+                ],
+                "params": [],
+                "primary": "pagevideos_id",
+                "joins": [],
+                "orders": [
+                  {
+                    "table": "pagevideos",
+                    "column": "order",
+                    "direction": "ASC"
+                  }
+                ],
+                "query": "select `videolink`, `videocreator_id`, `videoflagged`, `videoauthorized`, `videoonline`, `order` from `pagecontent_pagevideos` as `pagevideos` order by `order` ASC"
+              }
+            },
+            "orders": []
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "type": "number",
+            "name": "pagecontent_id"
+          },
+          {
+            "type": "text",
+            "name": "pagetitle"
+          },
+          {
+            "type": "text",
+            "name": "pagedescription"
+          },
+          {
+            "type": "boolean",
+            "name": "contentonline"
+          },
+          {
+            "type": "boolean",
+            "name": "contentprivate"
+          },
+          {
+            "type": "datetime",
+            "name": "pagedatecreated"
+          },
+          {
+            "type": "datetime",
+            "name": "pageediteddate"
+          },
+          {
+            "type": "number",
+            "name": "pageeditor"
+          },
+          {
+            "type": "number",
+            "name": "pagecreator"
+          },
+          {
+            "type": "text",
+            "name": "pagetype"
+          },
+          {
+            "type": "text",
+            "name": "channelname"
+          },
+          {
+            "type": "number",
+            "name": "pageorder"
+          },
+          {
+            "type": "number",
+            "name": "homepageorder"
+          },
+          {
+            "name": "pageimages",
+            "type": "array",
+            "sub": [
+              {
+                "type": "text",
+                "name": "imagelink"
+              },
+              {
+                "type": "number",
+                "name": "pageimages_id"
+              }
+            ]
+          },
+          {
+            "name": "pagevideos",
+            "type": "array",
+            "sub": [
+              {
+                "type": "text",
+                "name": "videolink"
+              },
+              {
+                "type": "boolean",
+                "name": "videoflagged"
+              }
+            ]
+          }
+        ],
+        "outputType": "object"
+      }
+    ]
+  }
+}

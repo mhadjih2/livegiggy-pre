@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "$_GET": [
+      {
+        "type": "text",
+        "name": "seo_id"
+      }
+    ],
+    "$_POST": [
+      {
+        "type": "text",
+        "name": "seo_id"
+      }
+    ]
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "",
+        "module": "auth",
+        "action": "restrict",
+        "options": {
+          "provider": "livegiggysec",
+          "permissions": [
+            "SEO",
+            "Administrator"
+          ],
+          "loginUrl": "/login-page",
+          "forbiddenUrl": "/login-page"
+        }
+      },
+      {
+        "name": "seo_delete_query",
+        "module": "dbupdater",
+        "action": "delete",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "delete",
+            "table": "seo",
+            "wheres": {
+              "condition": "OR",
+              "rules": [
+                {
+                  "id": "seo_id",
+                  "field": "seo_id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{$_POST.seo_id}}",
+                  "data": {
+                    "column": "seo_id"
+                  },
+                  "operation": "="
+                },
+                {
+                  "id": "seo_id",
+                  "field": "seo_id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{$_GET.seo_id}}",
+                  "data": {
+                    "column": "seo_id"
+                  },
+                  "operation": "="
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "returning": "seo_id",
+            "query": "delete from `seo` where `seo_id` = ? or `seo_id` = ?",
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{$_POST.seo_id}}",
+                "test": ""
+              },
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P2",
+                "value": "{{$_GET.seo_id}}",
+                "test": ""
+              }
+            ]
+          }
+        },
+        "meta": [
+          {
+            "name": "affected",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  }
+}

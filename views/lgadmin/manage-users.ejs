@@ -1,0 +1,155 @@
+<!-- Wappler include head-page="layouts/admin" is="dmx-app" id="manageusers" appConnect="local" bootstrap5="local" fontawesome_5="cdn" components="{dmxBootstrap5TableGenerator:{},dmxFormatter:{},dmxBootstrap5Modal:{},dmxNotifications:{},dmxBootbox5:{}}" -->
+<dmx-serverconnect id="conn_get_all_roles_available" url="/api/admin/role/all_roles_available" noload="true"></dmx-serverconnect>
+<dmx-serverconnect id="conn_get_user_roles_present" url="/api/admin/role/user_roles_present" noload="true"></dmx-serverconnect>
+<div class="modal" id="modal_roles_single_user" is="dmx-bs5-modal" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-black-50 bg-warning">
+                <h5 class="modal-title">Edit User Roles</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover table-sm">
+                        <thead>
+                            <tr>
+                                <th>Role_id</th>
+                                <th>User_id</th>
+                                <th>Role</th>
+                                <th>Rolename</th>
+                                <th scope="row"></th>
+                            </tr>
+                        </thead>
+                        <tbody is="dmx-repeat" dmx-generator="bs5table" dmx-bind:repeat="conn_get_user_roles_present.data.query" id="tableRepeat1">
+                            <tr>
+                                <td dmx-text="role_id"></td>
+                                <td dmx-text="user_id"></td>
+                                <td dmx-text="role"></td>
+                                <td dmx-text="rolename"></td>
+                                <td><button id="btn2" class="btn btn-danger" dmx-on:click="run([{serverConnect:{name:'sc',outputType:'object',url:'/api/admin/role/delete',site:'testing2',params:{role_id:`role_id`}}},{run:{outputType:'text',action:`conn_get_user_roles_present.load({user_id: conn_get_single_record.data.query.user_id})`}}])">
+                                        <i class="far fa-trash-alt fa-lg"></i><br></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <form id="id_form_add_role_to_user" is="dmx-serverconnect-form" method="post" action="/api/admin/role/add_role_to_user" dmx-on:success="notifies1.success('Role added!');conn_get_user_roles_present.load({user_id: conn_get_single_record.data.query.user_id})" dmx-on:forbidden="notifies1.warning('Role already exists!')">
+                    <div class="form-group mb-3">
+                        <input id="user_id" name="user_id" class="form-control" dmx-bind:value="conn_get_user_roles_present.data.query[0].user_id" type="hidden">
+                        <input id="role" name="role" type="hidden" class="form-control" dmx-bind:value="id_dropdown_role_select.selectedValue">
+
+                        <label for="id_dropdown_role_select" class="form-label">Select -user role- to add:</label>
+                        <select id="id_dropdown_role_select" class="form-select" name="role_select" dmx-bind:options="conn_get_all_roles_available.data.get_all_roles_available_query" optiontext="rolename" optionvalue="role">
+                        </select><button id="btn4_submit_added_role" class="btn btn-success text-light mt-3" type="submit">Add new Role</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<dmx-notifications id="notifies1"></dmx-notifications>
+<dmx-serverconnect id="conn_get_single_record" url="/api/admin/user/read" noload="true"></dmx-serverconnect>
+<div class="modal fade opacity-75 rounded rounded-2 border-info border border-2" id="modal_edit_user" is="dmx-bs5-modal" tabindex="-1" dmx-on:hide-bs-modal="conn_form_edit_single_user.reset()">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-black-50 bg-warning">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form is="dmx-serverconnect-form" id="conn_form_edit_single_user" method="post" action="/api/admin/user/update" dmx-generator="bootstrap5" dmx-form-type="horizontal" dmx-populate="conn_get_single_record.data.query" dmx-on:success="notifies1.success('Record Updated!');modal_edit_user.conn_form_edit_single_user.reset();modal_edit_user.hide();conn_get_single_record.load({})" dmx-on:unauthorized="notifies1.warning('Unauthorized Action!')" dmx-on:error="notifies1.warning('Something went wrong!')" dmx-on:invalid="notifies1.warning('Y\'all typed in som\'ting wrong!')" dmx-on:forbidden="notifies1.danger('Yeah, but no, yeah, computer says no!')">
+                    <input type="hidden" name="user_id" id="inp_user_id" dmx-bind:value="conn_get_single_record.data.query.user_id">
+                    <div class="form-group mb-3 row">
+                        <label for="inp_first_name" class="col-sm-2 col-form-label">First name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inp_first_name" name="first_name" dmx-bind:value="conn_get_single_record.data.query.first_name" aria-describedby="inp_first_name_help" placeholder="Enter First name">
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label for="inp_last_name" class="col-sm-2 col-form-label">Last name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inp_last_name" name="last_name" dmx-bind:value="conn_get_single_record.data.query.last_name" aria-describedby="inp_last_name_help" placeholder="Enter Last name">
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label for="inp_email" class="col-sm-2 col-form-label">Email</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="inp_email" name="email" dmx-bind:value="conn_get_single_record.data.query.email" aria-describedby="inp_email_help" placeholder="Enter Email">
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label for="inp_signup_date" class="col-sm-2 col-form-label">Signup date</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="inp_signup_date" name="signup_date" dmx-bind:value="conn_get_single_record.data.query.signup_date" aria-describedby="inp_signup_date_help" placeholder="Enter Signup date">
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <label for="inp_validated_date" class="col-sm-2 col-form-label">Validated date</label>
+                        <div class="col-sm-10">
+                            <input type="date" class="form-control" id="inp_validated_date" name="validated_date" dmx-bind:value="conn_get_single_record.data.query.validated_date" aria-describedby="inp_validated_date_help" placeholder="Enter Validated date">
+                        </div>
+                    </div>
+                    <div class="form-group mb-3 row">
+                        <div class="col-sm-2">&nbsp;</div>
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary" dmx-bind:value="conn_get_single_record.data.query.Save" dmx-bind:disabled="state.executing">Save <span class="spinner-border spinner-border-sm" role="status" dmx-show="state.executing"></span></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<dmx-serverconnect id="conn_users" url="/api/admin/user/search" dmx-param:filter="input1.value"></dmx-serverconnect>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="form-group mb-3 row">
+                <label for="input1" class="col-sm-2 col-form-label">Search</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="input1" name="input1" aria-describedby="input1_help" placeholder="Enter keyword here">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col mt-3">
+            <div class="table-responsive" id="user_edit_table">
+                <table class="table table-striped table-bordered table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="row">User edit</th>
+                            <th scope="row">User role edit</th>
+                            <th scope="row">Remove User</th>
+                            <th>User</th>
+                            <th>First name</th>
+                            <th>Last name</th>
+                            <th>Email</th>
+                            <th>Signup date</th>
+                            <th>Validated date</th>
+                        </tr>
+                    </thead>
+                    <tbody is="dmx-repeat" dmx-generator="bs5table" dmx-bind:repeat="conn_users.data.query" id="table_main_page_users" dmx-on:click="run({run:{outputType:'text',action:`conn_user_single_roles.load({user_id: user_id})`}})">
+                        <tr>
+                            <td><button id="btn1" class="btn bg-success w-100" dmx-on:click="conn_get_single_record.load({user_id: user_id});modal_edit_user.show()"><i class="far fa-edit fa-lg"></i></button></td>
+                            <td><button id="btn2_role_edit" class="btn bg-warning w-100" dmx-on:click="run([{run:{outputType:'text',action:`conn_get_single_record.load({user_id: user_id})`}},{run:{outputType:'text',action:`conn_get_user_roles_present.load({user_id: user_id})`}},{run:{outputType:'text',action:`conn_get_all_roles_available.load({})`}},{run:{outputType:'text',action:`modal_roles_single_user.show()`}}])"><i class="fas fa-users-cog fa-lg"></i></button></td>
+                            <td><button id="btn3" class="btn bg-danger w-100" dmx-on:click="run([{run:{outputType:'text',action:`conn_get_single_record.load({user_id: user_id})`}},{'bootbox.confirm':{name:'confirm',message:'Do you want to delete this user?',title:'Delete',buttons:{confirm:{label:'Delete'},cancel:{label:'Nope'}},then:{steps:[{serverConnect:{name:'sc',outputType:'object',url:'/api/admin/user/delete',site:'testing2',params:{user_id:`conn_get_single_record.data.query.user_id`}}},{run:{outputType:'text',action:`notifies1.success(\'User deleted!\')`}}]}}},{run:{outputType:'text',action:`conn_users.load({})`}}])"><i class="fas fa-trash-alt fa-lg"></i></button></td>
+                            <td dmx-text="user_id"></td>
+                            <td dmx-text="first_name"></td>
+                            <td dmx-text="last_name"></td>
+                            <td dmx-text="email"></td>
+                            <td dmx-text="signup_date.formatDate('dd/MM/yyyy')"></td>
+                            <td dmx-text="validated_date.formatDate('dd/MM/yyyy HH:mm')"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<meta name="ac:route" content="/lgadmin/manage-users">

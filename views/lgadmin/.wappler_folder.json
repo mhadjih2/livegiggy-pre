@@ -1,0 +1,14 @@
+{
+  "admin-home.ejs": {
+    "layoutPage": "admin",
+    "description": ""
+  },
+  "manage-users.ejs": {
+    "layoutPage": "admin",
+    "description": ""
+  },
+  "page-content.ejs": {
+    "layoutPage": "admin",
+    "description": ""
+  }
+}

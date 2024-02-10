@@ -1,0 +1,30 @@
+<!-- Wappler include head-page="layouts/main" is="dmx-app" id="testpage" appConnect="local" bootstrap5="local" components="{dmxBootstrap5TableGenerator:{}}" fontawesome_5="cdn" -->
+<dmx-serverconnect id="conn_pagedata_public" url="/api/get_pagedata_public" dmx-param:pagetype="'P'"></dmx-serverconnect>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Local Attractions</h1>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th>Pagetitle</th>
+                        </tr>
+                    </thead>
+                    <tbody is="dmx-repeat" dmx-generator="bs5table" dmx-bind:repeat="conn_pagedata.data.query" id="tableRepeat1">
+                        <tr>
+                            <td dmx-text="pagetitle"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<meta name="ac:route" content="/testpage">

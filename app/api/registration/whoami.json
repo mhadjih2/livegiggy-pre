@@ -1,0 +1,207 @@
+[
+  {
+    "name": "identity",
+    "module": "auth",
+    "action": "identify",
+    "options": {
+      "provider": "livegiggysec"
+    },
+    "output": true,
+    "meta": []
+  },
+  {
+    "name": "query_who_am_i",
+    "module": "dbconnector",
+    "action": "single",
+    "options": {
+      "connection": "db",
+      "sql": {
+        "type": "select",
+        "columns": [
+          {
+            "table": "user",
+            "column": "user_id"
+          },
+          {
+            "table": "user",
+            "column": "firstname"
+          },
+          {
+            "table": "user",
+            "column": "lastname"
+          },
+          {
+            "table": "user",
+            "column": "email"
+          },
+          {
+            "table": "user",
+            "column": "username"
+          },
+          {
+            "table": "user",
+            "column": "avatar"
+          },
+          {
+            "table": "user",
+            "column": "validationcode"
+          },
+          {
+            "table": "user",
+            "column": "userupforremoval"
+          },
+          {
+            "table": "whoami",
+            "column": "role"
+          }
+        ],
+        "params": [
+          {
+            "operator": "equal",
+            "type": "expression",
+            "name": ":P1",
+            "value": "{{identity}}",
+            "test": ""
+          }
+        ],
+        "table": {
+          "name": "user"
+        },
+        "primary": "user_id",
+        "joins": [
+          {
+            "table": "user_role",
+            "column": "*",
+            "alias": "whoami",
+            "type": "INNER",
+            "clauses": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "table": "whoami",
+                  "column": "user_id",
+                  "operator": "equal",
+                  "operation": "=",
+                  "value": {
+                    "table": "user",
+                    "column": "user_id"
+                  }
+                }
+              ]
+            },
+            "primary": "userrole_id"
+          }
+        ],
+        "wheres": {
+          "condition": "AND",
+          "rules": [
+            {
+              "id": "user.user_id",
+              "field": "user.user_id",
+              "type": "double",
+              "operator": "equal",
+              "value": "{{identity}}",
+              "data": {
+                "table": "user",
+                "column": "user_id",
+                "type": "number",
+                "columnObj": {
+                  "type": "increments",
+                  "primary": true,
+                  "unique": false,
+                  "nullable": false,
+                  "name": "user_id"
+                }
+              },
+              "operation": "="
+            },
+            {
+              "id": "user.validationcode",
+              "field": "user.validationcode",
+              "type": "string",
+              "operator": "equal",
+              "value": "null",
+              "data": {
+                "table": "user",
+                "column": "validationcode",
+                "type": "text",
+                "columnObj": {
+                  "type": "string",
+                  "maxLength": 6,
+                  "primary": false,
+                  "unique": false,
+                  "nullable": true,
+                  "name": "validationcode"
+                }
+              },
+              "operation": "="
+            },
+            {
+              "id": "user.userupforremoval",
+              "field": "user.userupforremoval",
+              "type": "boolean",
+              "operator": "equal",
+              "value": false,
+              "data": {
+                "table": "user",
+                "column": "userupforremoval",
+                "type": "boolean",
+                "columnObj": {
+                  "type": "boolean",
+                  "primary": false,
+                  "unique": false,
+                  "nullable": true,
+                  "name": "userupforremoval"
+                }
+              },
+              "operation": "="
+            }
+          ],
+          "conditional": null,
+          "valid": true
+        },
+        "query": "select `user`.`user_id`, `user`.`firstname`, `user`.`lastname`, `user`.`email`, `user`.`username`, `user`.`avatar`, `user`.`validationcode`, `user`.`userupforremoval`, `whoami`.`role` from `user` inner join `user_role` as `whoami` on `whoami`.`user_id` = `user`.`user_id` where `user`.`user_id` = ? and `user`.`validationcode` = ? and `user`.`userupforremoval` = ?"
+      }
+    },
+    "output": true,
+    "meta": [
+      {
+        "type": "number",
+        "name": "user_id"
+      },
+      {
+        "type": "text",
+        "name": "firstname"
+      },
+      {
+        "type": "text",
+        "name": "lastname"
+      },
+      {
+        "type": "text",
+        "name": "email"
+      },
+      {
+        "type": "text",
+        "name": "username"
+      },
+      {
+        "type": "text",
+        "name": "avatar"
+      },
+      {
+        "type": "text",
+        "name": "validationcode"
+      },
+      {
+        "type": "boolean",
+        "name": "userupforremoval"
+      },
+      {
+        "type": "text",
+        "name": "role"
+      }
+    ],
+    "outputType": "object"
+  }
+]

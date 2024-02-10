@@ -1,0 +1,317 @@
+{
+  "meta": {
+    "options": {
+      "linkedFile": "/views/Validate-Account.ejs",
+      "linkedForm": "validateaccount"
+    }
+  },
+  "exec": {
+    "steps": [
+      {
+        "name": "identity",
+        "module": "auth",
+        "action": "identify",
+        "options": {
+          "provider": "livegiggysec"
+        },
+        "output": true,
+        "meta": []
+      },
+      {
+        "name": "query_get_user_info",
+        "module": "dbconnector",
+        "action": "single",
+        "options": {
+          "connection": "db",
+          "sql": {
+            "type": "select",
+            "columns": [
+              {
+                "table": "user",
+                "column": "email"
+              },
+              {
+                "table": "user",
+                "column": "firstname"
+              },
+              {
+                "table": "user",
+                "column": "lastname"
+              },
+              {
+                "table": "user",
+                "column": "validationcode"
+              }
+            ],
+            "params": [
+              {
+                "operator": "equal",
+                "type": "expression",
+                "name": ":P1",
+                "value": "{{identity}}",
+                "test": ""
+              }
+            ],
+            "table": {
+              "name": "user"
+            },
+            "primary": "user_id",
+            "joins": [],
+            "wheres": {
+              "condition": "AND",
+              "rules": [
+                {
+                  "id": "user.user_id",
+                  "field": "user.user_id",
+                  "type": "double",
+                  "operator": "equal",
+                  "value": "{{identity}}",
+                  "data": {
+                    "table": "user",
+                    "column": "user_id",
+                    "type": "number",
+                    "columnObj": {
+                      "type": "increments",
+                      "primary": true,
+                      "unique": false,
+                      "nullable": false,
+                      "name": "user_id"
+                    }
+                  },
+                  "operation": "=",
+                  "table": "user"
+                }
+              ],
+              "conditional": null,
+              "valid": true
+            },
+            "query": "select `email`, `firstname`, `lastname`, `validationcode` from `user` where `user`.`user_id` = ?"
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "type": "text",
+            "name": "email"
+          },
+          {
+            "type": "text",
+            "name": "firstname"
+          },
+          {
+            "type": "text",
+            "name": "lastname"
+          },
+          {
+            "type": "text",
+            "name": "validationcode"
+          }
+        ],
+        "outputType": "object"
+      },
+      {
+        "name": "",
+        "module": "core",
+        "action": "condition",
+        "options": {
+          "if": "{{query_get_user_info.confirmation_code<1}}",
+          "then": {
+            "steps": {
+              "name": "alreadyValidated",
+              "module": "core",
+              "action": "response",
+              "options": {
+                "status": 401,
+                "data": "Already Validated!"
+              }
+            }
+          }
+        },
+        "outputType": "boolean"
+      },
+      {
+        "name": "salt2_value",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": "0,1,2,3,4,5,6,7,8,9,a,b,c,d,@,#,!,0,1,2,3,4,5,6,7,8,9,a,b,c,d,@,#,!,0,1,2,3,4,5,6,7,8,9,a,b,c,d,@,#,!"
+        },
+        "meta": [],
+        "outputType": "text"
+      },
+      {
+        "name": "salt2_array",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "value": "{{salt2_value.split(',')}}",
+          "key": "g_salt2_array"
+        },
+        "meta": [],
+        "outputType": "array"
+      },
+      {
+        "name": "salt2_array_random",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "key": "g_salt2_array_random",
+          "value": "{{g_salt2_array.randomize()}}"
+        },
+        "meta": [],
+        "outputType": "array"
+      },
+      {
+        "name": "auth2_code",
+        "module": "core",
+        "action": "setvalue",
+        "options": {
+          "key": "g_auth2_code",
+          "value": ""
+        },
+        "meta": [],
+        "outputType": "text",
+        "output": true
+      },
+      {
+        "name": "repeat",
+        "module": "core",
+        "action": "repeat",
+        "options": {
+          "repeat": 6,
+          "outputFields": [],
+          "exec": {
+            "steps": {
+              "name": "auth2_code",
+              "module": "core",
+              "action": "setvalue",
+              "options": {
+                "key": "g_auth2_code",
+                "value": "{{g_auth2_code}}{{g_salt2_array_random[$index]}}"
+              },
+              "meta": [],
+              "outputType": "text"
+            }
+          }
+        },
+        "output": true,
+        "meta": [
+          {
+            "name": "$index",
+            "type": "number"
+          },
+          {
+            "name": "$number",
+            "type": "number"
+          },
+          {
+            "name": "$name",
+            "type": "text"
+          },
+          {
+            "name": "$value",
+            "type": "object"
+          }
+        ],
+        "outputType": "array"
+      },
+      {
+        "name": "",
+        "module": "core",
+        "action": "condition",
+        "options": {
+          "if": "{{g_auth2_code.length()<6}}",
+          "then": {
+            "steps": {
+              "name": "nogood",
+              "module": "core",
+              "action": "response",
+              "options": {
+                "status": 401,
+                "data": "Not Good"
+              }
+            }
+          },
+          "else": {
+            "steps": {
+              "name": "update",
+              "module": "dbupdater",
+              "action": "update",
+              "options": {
+                "connection": "db",
+                "sql": {
+                  "type": "update",
+                  "values": [
+                    {
+                      "table": "user",
+                      "column": "confirmation_code",
+                      "type": "text",
+                      "value": "{{g_auth2_code}}"
+                    }
+                  ],
+                  "table": "user",
+                  "wheres": {
+                    "condition": "AND",
+                    "rules": [
+                      {
+                        "id": "user_id",
+                        "field": "user_id",
+                        "type": "double",
+                        "operator": "equal",
+                        "value": "{{identity}}",
+                        "data": {
+                          "column": "user_id"
+                        },
+                        "operation": "="
+                      }
+                    ],
+                    "conditional": null,
+                    "valid": true
+                  },
+                  "returning": "user_id",
+                  "query": "update `user` set `confirmation_code` = ? where `user_id` = ? returning `user_id`",
+                  "params": [
+                    {
+                      "name": ":P1",
+                      "type": "expression",
+                      "value": "{{g_auth2_code}}",
+                      "test": ""
+                    },
+                    {
+                      "operator": "equal",
+                      "type": "expression",
+                      "name": ":P2",
+                      "value": "{{identity}}",
+                      "test": ""
+                    }
+                  ]
+                }
+              },
+              "meta": [
+                {
+                  "name": "affected",
+                  "type": "number"
+                }
+              ]
+            }
+          }
+        },
+        "outputType": "boolean"
+      },
+      {
+        "name": "",
+        "module": "mail",
+        "action": "send",
+        "options": {
+          "instance": "smtp",
+          "subject": "Your validation code for Livegiggy.com",
+          "fromName": "LiveGiggy.com",
+          "fromEmail": "michel@mhageman.nl",
+          "toName": "{{query_get_user_info.first_name+','+query_get_user_info.last_name}}",
+          "toEmail": "{{query_get_user_info.email}}",
+          "body": "This is your validation-code:\n\n{{g_auth2_code}}\n\nLiveGiggy"
+        }
+      }
+    ]
+  }
+}
